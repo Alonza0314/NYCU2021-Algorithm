@@ -1,0 +1,38 @@
+一開始我們先創建一個單位結構，包含：color（初始化-1）還有一個vector，這個vector的形態就是一般的int，用來存有哪些節點跟自己這個index編號的節點相鄰。
+同時我們需要開一個vector用來記錄最後如果符合題意我們要輸出的數字有哪些，假設這個vector的名字叫做output
+接下來就是一般的讀檔，因為沒有給我們需要讀幾組東西，我們就用while(！input.eof())的方法讀
+在則之前我們需要先用動態配置的方法配置一個我們一開始創建的單位結構的array
+vertex *array=new vertex[]
+要配置幾個格子就看一開始我們讀了幾個edge的那個數字
+然後就利用array[v1].table.push_back(v2)這種方式放進去我們配置的array裡面
+table是我們一開始創建的單位結構裡面的vector
+接下來就是要call我們的destination_function(array)
+這個function要傳入我們配置的array（他不是全域，所以要傳入）
+這個function回傳值是bool用來判斷有沒有符合題目要的東西
+
+function內容：
+我們先將編號0也就是array[0]的節點的color設為0（我自己是用0跟1代表兩種顏色）
+然後丟進去queue（利用queue.push(0))
+這個queue就是基本的BFS操作
+接下來也就是BFS的小小改編
+我們要在這個queue不是空的情況下一直操作（只要queue有東西我們就要判斷）
+首先我們在這個while裡面先設定一個（可以開全域）temp_index=queue的front
+然後pop這個front
+現在要判斷說這個節點的color是0還是1
+以下兩種狀況，就說一種另外一個就是相對的，想一下應該很簡單
+如果現在pop的情況是color=0（要用array[temp_index].color==0是true還是false去“判斷”）
+如果color是0，那就是說跟我們的編號0的節點顏色一樣那就要丟入我們一開始建立的vec-output裡面
+（這個步驟在“如果color=1的情況下就不用做，因為題目最後要的是跟節點0一樣顏色的node有哪些）
+然後我們去遍歷這個array[index].table(記錄有誰跟他相鄰的vector）下面的所有節點（BFS最重要步驟）
+照理來說我們要直接丟進去queue，但是我們有三個情況要判斷
+1.如果這個節點沒有被遍歷過（color=-1），那我們就吧這個節點的顏色設定成1（我們現在是在主節點為0的情況下去找跟他相鄰的節點），然後丟進去queue裡面
+2.這個節點的color=0（跟現在的主節點顏色一樣）那就發生衝突！不符合題意，所以我們這個時候直接return false，但是在return之前如果說你的queue是開在全域記得要先用while把這個queue.pop完，不然會影響下一次使用，如果是開在區域，最好還是要處理，我不確定會不會有問題
+3.這個節點的color=1（有被遍歷過，已經被標上跟現在主節點不一樣的顏色），那就continue，反正有被遍歷過也跟我的主節點顏色不衝突
+基本上另外一邊“color是1”的情況就是上面說的反過來，寫一個else然後抄一抄就可以解決
+最後如果說一直到吧while跑完都沒有因為跟主節點有衝突（全部都符合題意要的）就return true
+
+回到main function：
+如果destination_function回傳的是true代表說符合我們想要的，又因為題意說我要把跟節點0同樣顏色的節點由小排到大印出來（我們把跟0一樣顏色的節點存在output的vector裡面），所以call sort的function（#include<algorithm>)
+sort完了之後就一個一個印出來，注意格式：每一個數字後面都有“,”但是最後一個沒有（寫個if判斷是不是最後一個就好了）記得全部vector輸出完要output<<“\n”
+另外一個就是回傳是false就代表這個graph不符合題意，那就直接output-1就好了
+最後記得在每一個case結束進入下一個case前要dalete[] 那個以vertex為單位的array 還要記得clear那個output的vector
